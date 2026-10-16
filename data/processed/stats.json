@@ -1,0 +1,23 @@
+{
+  "seed": 0,
+  "valid_examples": 58146,
+  "invalid": 0,
+  "duplicates": 1854,
+  "held_out_functions": 50,
+  "dropped_to_avoid_leakage": 52346,
+  "splits": {
+    "train": {
+      "total": 5000,
+      "no_call": 500
+    },
+    "val": {
+      "total": 300,
+      "no_call": 30
+    },
+    "test": {
+      "total": 500,
+      "no_call": 50
+    }
+  },
+  "leakage_check_train_val_tools_in_test_functions": 0
+}

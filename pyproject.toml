@@ -1,0 +1,13 @@
+[project]
+name = "lora-to-vllm"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dataset>=2.0.0",
+    "datasets>=5.1.0",
+    "dotenv>=0.9.9",
+    "pandas>=3.0.6",
+    "requests>=2.34.2",
+]
