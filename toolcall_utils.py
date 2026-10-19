@@ -1,10 +1,4 @@
 """Utilitaires partagés par train_qlora.py et eval_tool_calls.py.
-
-- conversion d'un enregistrement (sortie de prepare_data.py) au format natif des
-  modèles Qwen : outils au schéma OpenAI + appels dans `tool_calls` (le chat
-  template du modèle produit alors les balises <tool_call>...</tool_call>) ;
-- extraction des appels d'outils dans le texte généré ;
-- métriques d'évaluation.
 """
 
 import json
@@ -113,7 +107,7 @@ def _key(call: dict, lenient: bool = False) -> str:
 
 
 def score(records: list[dict], generations: list[str]) -> dict:
-    """Métriques par type d'exemple (« call » : un outil est attendu, « no_call » : aucun)."""
+    """Métriques par type d'exemple."""
     stats = {"call": Counter(), "no_call": Counter()}
     for rec, text in zip(records, generations):
         calls, valid = parse_tool_calls(text)
