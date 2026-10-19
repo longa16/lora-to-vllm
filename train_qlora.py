@@ -1,19 +1,4 @@
 """Fine-tuning QLoRA d'un modèle Qwen pour le function calling (GPU T4 16 Go : Kaggle / Colab).
-
-Entrées : train.jsonl et val.jsonl produits par prepare_data.py.
-Sorties : <out>/adapter (adaptateur LoRA final), <out>/checkpoints, <out>/train_info.json.
-
-Choix de conception :
-    - format natif du modèle : les outils et les appels passent par le chat template
-      (balises <tool_call>), donc le même format est utilisé à l'inférence avec vLLM ;
-    - la perte est calculée uniquement sur la réponse de l'assistant ;
-    - fp16 (le T4 ne gère pas le bf16) ;
-    - checkpoints réguliers, reprise possible (--resume), envoi optionnel vers le Hub
-      Hugging Face en dépôt privé (--hub-repo, avec HF_TOKEN dans l'environnement).
-
-Exemple (Kaggle, après `pip install -U transformers peft bitsandbytes accelerate`) :
-    python train_qlora.py --model Qwen/Qwen2.5-1.5B-Instruct \
-        --train data/processed/train.jsonl --val data/processed/val.jsonl --out runs/qwen15b
 """
 
 import argparse
@@ -30,14 +15,14 @@ from transformers import (AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfi
 
 from toolcall_utils import to_native_messages
 
-# transformers >= 5 renomme torch_dtype en dtype
+# transformers
 DTYPE_KW = "dtype" if int(transformers.__version__.split(".")[0]) >= 5 else "torch_dtype"
 
 LORA_TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
 
 def encode_example(rec: dict, tok, max_len: int):
-    """Renvoie (exemple tokenisé, None) ou (None, raison du rejet)."""
+    """Renvoie exemple tokenisé, None ou None, raison du rejet."""
     messages, tools = to_native_messages(rec)
     prompt = tok.apply_chat_template(messages[:-1], tools=tools, tokenize=False, add_generation_prompt=True)
     full = tok.apply_chat_template(messages, tools=tools, tokenize=False)
@@ -49,7 +34,7 @@ def encode_example(rec: dict, tok, max_len: int):
         return None, "boundary"
     if len(full_ids) > max_len:
         return None, "too_long"
-    labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids):]  # perte sur la réponse seulement
+    labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids):] 
     return {"input_ids": full_ids, "attention_mask": [1] * len(full_ids), "labels": labels}, None
 
 
