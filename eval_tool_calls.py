@@ -1,15 +1,4 @@
-"""Évalue un modèle (de base ou avec adaptateur LoRA) sur test.jsonl.
-
-Le modèle de base évalué avec le même format d'outils sert de baseline « prompt seul » :
-lance le script deux fois, sans puis avec --adapter, et compare les rapports.
-
-Sorties : <out-prefix>_report.json (métriques) et <out-prefix>_generations.jsonl
-(une ligne par exemple, pour l'analyse d'erreurs).
-
-Exemples :
-    python eval_tool_calls.py --model Qwen/Qwen2.5-1.5B-Instruct --test data/processed/test.jsonl --out-prefix results/base_1.5b
-    python eval_tool_calls.py --model Qwen/Qwen2.5-1.5B-Instruct --adapter runs/qwen15b/adapter \
-        --test data/processed/test.jsonl --out-prefix results/lora_1.5b
+"""Évalue un modèle sur test.jsonl.
 """
 
 import argparse
@@ -22,7 +11,6 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from toolcall_utils import score, to_native_messages
 
-# transformers >= 5 renomme torch_dtype en dtype
 DTYPE_KW = "dtype" if int(transformers.__version__.split(".")[0]) >= 5 else "torch_dtype"
 
 STRIP = ("<|im_end|>", "<|endoftext|>")
